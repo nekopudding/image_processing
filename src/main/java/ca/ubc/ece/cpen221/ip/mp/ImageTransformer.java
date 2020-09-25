@@ -317,8 +317,61 @@ public class ImageTransformer {
      * bottom-right corner will use a 2 x 2 block.
      */
     public Image blockPaint(int blockSize) {
-        // TODO: Implement this method
-        return null;
+        Image blockImg = new Image(width, height);
+        for (int col = 0; col < width; col += blockSize){
+            for (int row = 0; row < height; row += blockSize){
+                int[] redVals = new int[blockSize*blockSize];
+                int[] greenVals = new int[blockSize*blockSize];
+                int[] blueVals = new int[blockSize*blockSize];
+                int counter = 0;
+                for (int blockCol = col; blockCol < col + blockSize; blockCol++){
+                    for (int blockRow = row; blockRow < row + blockSize; blockRow++){
+                        Color currColor = image.get(blockCol, blockRow);
+                        redVals[counter] = currColor.getRed();
+                        greenVals[counter] = currColor.getGreen();
+                        blueVals[counter] = currColor.getBlue();
+                        counter++;
+                    }
+                }
+                float averageRed = findAverageArray(redVals);
+                float averageGreen = findAverageArray(greenVals);
+                float averageBlue = findAverageArray(blueVals);
+                Color averageColor = new Color(averageRed, averageGreen, averageBlue);
+                for (int blockCol = col; blockCol < col + blockSize; blockCol++){
+                    for (int blockRow = row; blockRow < row + blockSize; blockRow++){
+                        blockImg.set(blockCol, blockRow, averageColor);
+                    }
+                }
+            }
+        }
+        int remainderCols = width % blockSize;
+        int remainderRows = height % blockSize;
+        for (int col = width - remainderCols - 1; col < width; col++){
+            for (int row = 0; row < height; row += blockSize) {
+
+            }
+        }
+
+        return blockImg;
+    }
+
+    /**
+     * Helper method to find average value of an array.
+     *
+     * @param array is the array to be analyzed. Array must be of ints, and must
+     *              not be empty.
+     *
+     * @return average is a number of float datatype that is equal to the sum
+     * of the elements of the array, divided by the number of elements in the array.
+     *
+     */
+    private float findAverageArray(int[] array){
+        int sum = 0;
+        float numElements = array.length;
+        for (int i = 0; i < numElements; i++){
+            sum += array[i];
+        }
+        return sum/numElements;
     }
 
     /**
