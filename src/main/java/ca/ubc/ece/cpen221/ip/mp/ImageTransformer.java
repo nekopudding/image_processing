@@ -276,7 +276,8 @@ public class ImageTransformer {
     the implementation requires x and y to be centered, which is col - (width/2) and row - (height/2)
     x*cos(angle) + y*sin(angle) + oriWidth/2
     new width = hypotenuse * cos(rotation_angle - original angle)
-     */
+    - the width and height of new image is currently offset
+    */
     public Image rotate(double degrees) {
         // TODO: Implement this method
         int original_width = width;
@@ -296,7 +297,7 @@ public class ImageTransformer {
                 int original_x = (int) ((col - width / 2) * Math.cos(degrees * Math.PI / 180) +
                         (row - new_height / 2) * Math.sin(degrees * Math.PI / 180) + original_width / 2);
                 int original_y = (int) (-(col - width / 2) * Math.sin(degrees * Math.PI / 180) +
-                        (row - height / 2) * Math.cos(degrees * Math.PI / 180) + original_height / 2);
+                        (row - height / 2) * Math.cos(degrees * Math.PI / 180) + original_height / 2 );
                 if (original_x >= 0 && original_y >= 0 &&
                         original_x < original_width &&
                         original_y < original_height) {
@@ -306,8 +307,10 @@ public class ImageTransformer {
                 }
             }
         }
-        image.show();
-        return null;
+        /*outImage.show();
+        while(width > 0) {
+        }*/
+        return outImage;
     }
 
     /**
