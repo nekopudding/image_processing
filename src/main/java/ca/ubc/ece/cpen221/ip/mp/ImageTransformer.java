@@ -137,16 +137,16 @@ public class ImageTransformer {
         Image denoisedImg = new Image(width, height);
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
-                int neighbors = countNeighbors(col,row);
+                int neighbors = countNeighbors(col, row);
                 int[] redVals = new int[neighbors + 1];
                 int[] greenVals = new int[neighbors + 1];
                 int[] blueVals = new int[neighbors + 1];
                 int counter = 0;
-                for (int i = -1; i < 2; i++){
+                for (int i = -1; i < 2; i++) {
                     if (col + i >= 0 && col + i < width) {
                         for (int k = -1; k < 2; k++) {
-                            if (row + k >= 0 && row + k < height){
-                                Color currColor = image.get(col+i, row+k);
+                            if (row + k >= 0 && row + k < height) {
+                                Color currColor = image.get(col + i, row + k);
                                 redVals[counter] = currColor.getRed();
                                 greenVals[counter] = currColor.getGreen();
                                 blueVals[counter] = currColor.getBlue();
@@ -177,16 +177,15 @@ public class ImageTransformer {
      * @param set is an array of integers. set assumed to not be empty.
      * @return float number representing the median of set.
      */
-    private float getMedian(int[] set){
+    private float getMedian(int[] set) {
         Arrays.sort(set);
-        if (set.length % 2 == 0){
-            double med = (set[set.length / 2] + set[set.length / 2 - 1])/2.0;
-            float median = (float)med;
+        if (set.length % 2 == 0) {
+            double med = (set[set.length / 2] + set[set.length / 2 - 1]) / 2.0;
+            float median = (float) med;
 
-        }
-        else{
+        } else {
             double med = (set[set.length / 2]);
-            float median = (float)med;
+            float median = (float) med;
         }
         return 0;
     }
@@ -194,39 +193,36 @@ public class ImageTransformer {
     /**
      * Helper method countNeighbors. This method takes the column and row number of a pixel,
      * and then checks how many neighbors it will have.
-     *
+     * <p>
      * If the pixel is on the first or last column or row, the number of neighbors goes to 5.
      * If the pixel is on a corner, the number of neighbors goes to 3.
-     *
+     * <p>
      * There are some other edge cases accounted for if the height or width of the image
      * is 1.
      *
      * @param col the column number of the pixel. 0 >= col > width.
      * @param row the row number of the pixel. 0 >= row > height.
      * @return the number of neighbors the pixel has.
-     *
      */
-    private int countNeighbors(int col, int row){
+    private int countNeighbors(int col, int row) {
         int neighbors = 8;
-        if (col == 0 || col == width -1){
+        if (col == 0 || col == width - 1) {
             neighbors -= 3;
-            if (width == 1){
+            if (width == 1) {
                 neighbors -= 3;
             }
         }
-        if (row == 0 || row == height - 1){
-            if (neighbors == 5){
+        if (row == 0 || row == height - 1) {
+            if (neighbors == 5) {
                 neighbors -= 2;
-            }
-            else if (neighbors == 2){
+            } else if (neighbors == 2) {
                 neighbors--;
-                if (height == 1){
+                if (height == 1) {
                     neighbors--;
                 }
-            }
-            else{
+            } else {
                 neighbors -= 3;
-                if (height ==1){
+                if (height == 1) {
                     neighbors -= 3;
                 }
             }
