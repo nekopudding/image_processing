@@ -137,27 +137,9 @@ public class ImageTransformer {
         Image denoisedImg = new Image(width, height);
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
-                int neighbors = countNeighbors(col, row);
-                int[] redVals = new int[neighbors + 1];
-                int[] greenVals = new int[neighbors + 1];
-                int[] blueVals = new int[neighbors + 1];
-                int counter = 0;
-                for (int i = -1; i < 2; i++) {
-                    if (col + i >= 0 && col + i < width) {
-                        for (int k = -1; k < 2; k++) {
-                            if (row + k >= 0 && row + k < height) {
-                                Color currColor = image.get(col + i, row + k);
-                                redVals[counter] = currColor.getRed();
-                                greenVals[counter] = currColor.getGreen();
-                                blueVals[counter] = currColor.getBlue();
-                                counter++;
-                            }
-                        }
-                    }
-                }
-                float medRed = getMedian(redVals);
-                float medGreen = getMedian(greenVals);
-                float medBlue = getMedian(blueVals);
+                float medRed = getMedian(scanNeighbors('r', col, row));
+                float medGreen = getMedian(scanNeighbors('g', col, row));
+                float medBlue = getMedian(scanNeighbors('b', col, row));
 
                 Color medColor = new Color(medRed, medGreen, medBlue);
 
@@ -166,6 +148,63 @@ public class ImageTransformer {
         }
 
         return denoisedImg;
+    }
+
+    /**
+     * Helper function that scans neighbouring pixels for color.
+     * Creates three int arrays, which store the red, green,
+     * and blue values for each neighboring pixel.
+     * scanNeighbors will return the color array based off char color.
+     *
+     * Relies on countNeighbors function to operate properly.
+     *
+     * @param col is the column (x-axis) position of the pixel to be analyzed.
+     *            Must be greater than 0 and less than width.
+     *
+     * @param row is the row (y-axis) position of the pixel to be analyzed.
+     *            Must be greater than 0 and less than height.
+     *
+     * @param color is either 'r', 'g', or 'b'. scanNeighbors returns
+     *              array of red values if 'r', array of green values if
+     *              'g', and array of blue values if 'b'.
+     *
+     * @throws IllegalArgumentException if color char is not 'r','g', or 'b'.
+     *
+     * @return int array of either red, green, or blue color values for each
+     * neighboring pixel (including pixel located by row and col).
+     *
+     */
+
+    private int[] scanNeighbors(char color, int col, int row) {
+        int neighbors = countNeighbors(col, row);
+        int[] redVals = new int[neighbors + 1];
+        int[] greenVals = new int[neighbors + 1];
+        int[] blueVals = new int[neighbors + 1];
+        int counter = 0;
+        for (int i = -1; i < 2; i++) {
+            if (col + i >= 0 && col + i < width) {
+                for (int k = -1; k < 2; k++) {
+                    if (row + k >= 0 && row + k < height) {
+                        Color currColor = image.get(col + i, row + k);
+                        redVals[counter] = currColor.getRed();
+                        greenVals[counter] = currColor.getGreen();
+                        blueVals[counter] = currColor.getBlue();
+                        counter++;
+                    }
+                }
+            }
+        }
+        if (color == 'r') {
+            return redVals;
+        }
+        if (color == 'g') {
+            return greenVals;
+        }
+        if (color == 'b') {
+            return blueVals;
+        } else {
+            throw new IllegalArgumentException("illegal color parameter.");
+        }
     }
 
     /**
@@ -238,8 +277,28 @@ public class ImageTransformer {
      * @return a weathered version of the image.
      */
     public Image weather() {
-        // TODO: Implement this method
-        return null;
+        Image weatheredImg = new Image(width, height);
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                int[] redVals = scanNeighbors('r', col, row);
+                Arrays.sort(redVals);
+                int minRed = redVals[0];
+
+                int[] greenVals = scanNeighbors('g', col, row);
+                Arrays.sort(greenVals);
+                int minGreen = greenVals[0];
+
+                int[] blueVals = scanNeighbors('b', col, row);
+                Arrays.sort(blueVals);
+                int minBlue = blueVals[0];
+
+                Color minColor = new Color(minRed, minGreen, minBlue);
+
+                weatheredImg.set(col, row, minColor);
+            }
+
+        }
+        return weatheredImg;
     }
 
     /**
