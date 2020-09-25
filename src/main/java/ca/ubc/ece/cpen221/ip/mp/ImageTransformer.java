@@ -32,10 +32,10 @@ public class ImageTransformer {
      *
      * @param img is not null
      */
-    public ImageTransformer(Image img) {
-        this.image = img;
-        this.width = img.width();
-        this.height = img.height();
+    public ImageTransformer(Image img){
+        width = img.width();
+        height = img.height();
+        image = img;
     }
 
     /**
@@ -271,8 +271,42 @@ public class ImageTransformer {
      * @param degrees the angle to rotate the image by, 0 <= degrees <= 360.
      * @return a rotate version of the instance.
      */
+
+    /*
+    the implementation requires x and y to be centered, which is col - (width/2) and row - (height/2)
+    x*cos(angle) + y*sin(angle) + oriWidth/2
+    new width = hypotenuse * cos(rotation_angle - original angle)
+     */
     public Image rotate(double degrees) {
         // TODO: Implement this method
+        int original_width = width;
+        int original_height = height;
+        Image original_image = image;
+
+
+        int new_width = (int) (width * Math.cos(degrees * Math.PI / 180) +
+                height * Math.sin(degrees * Math.PI / 180));
+        int new_height = (int) (width * Math.sin(degrees * Math.PI / 180) +
+                height * Math.cos(degrees * Math.PI / 180));
+        Image outImage = new Image(new_width, new_height);
+
+
+        for (int col = 0; col < new_width; col++) {
+            for (int row = 0; row < new_height; row++) {
+                int original_x = (int) ((col - width / 2) * Math.cos(degrees * Math.PI / 180) +
+                        (row - new_height / 2) * Math.sin(degrees * Math.PI / 180) + original_width / 2);
+                int original_y = (int) (-(col - width / 2) * Math.sin(degrees * Math.PI / 180) +
+                        (row - height / 2) * Math.cos(degrees * Math.PI / 180) + original_height / 2);
+                if (original_x >= 0 && original_y >= 0 &&
+                        original_x < original_width &&
+                        original_y < original_height) {
+                    outImage.set(col, row, original_image.get(original_x, original_y));
+                } else {
+                    outImage.set(col, row, new Color(255,255,255));
+                }
+            }
+        }
+        image.show();
         return null;
     }
 
