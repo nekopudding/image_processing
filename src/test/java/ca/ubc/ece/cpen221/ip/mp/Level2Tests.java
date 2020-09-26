@@ -15,4 +15,14 @@ public class Level2Tests {
         Image outputImage = t.weather();
         assertEquals(expectedImg, outputImage);
     }
+
+    @Test
+    public void test_BlockPaint() {
+        Image originalImg = new Image("resources/95006.jpg");
+        Image expectedImg = new Image("resources/tests/95006-seurat-4x4.png");
+        ImageTransformer t = new ImageTransformer(originalImg);
+        Image outputImage = t.blockPaint(3);
+        outputImage.show();
+        assertEquals(expectedImg, outputImage);
+    }
 }
