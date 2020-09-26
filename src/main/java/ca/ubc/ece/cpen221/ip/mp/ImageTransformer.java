@@ -318,25 +318,9 @@ public class ImageTransformer {
      */
     public Image blockPaint(int blockSize) {
         Image blockImg = new Image(width, height);
-        for (int col = 0; col < width; col += blockSize){
-            for (int row = 0; row < height; row += blockSize){
-                int[] redVals = new int[blockSize*blockSize];
-                int[] greenVals = new int[blockSize*blockSize];
-                int[] blueVals = new int[blockSize*blockSize];
-                int counter = 0;
-                for (int blockCol = col; blockCol < col + blockSize; blockCol++){
-                    for (int blockRow = row; blockRow < row + blockSize; blockRow++){
-                        Color currColor = image.get(blockCol, blockRow);
-                        redVals[counter] = currColor.getRed();
-                        greenVals[counter] = currColor.getGreen();
-                        blueVals[counter] = currColor.getBlue();
-                        counter++;
-                    }
-                }
-                float averageRed = findAverageArray(redVals);
-                float averageGreen = findAverageArray(greenVals);
-                float averageBlue = findAverageArray(blueVals);
-                Color averageColor = new Color(averageRed, averageGreen, averageBlue);
+        for (int col = 0; col <= width - blockSize; col += blockSize){
+            for (int row = 0; row <= height - blockSize; row += blockSize){
+                Color averageColor = getColorBlock(col, row, blockSize, blockSize);
                 for (int blockCol = col; blockCol < col + blockSize; blockCol++){
                     for (int blockRow = row; blockRow < row + blockSize; blockRow++){
                         blockImg.set(blockCol, blockRow, averageColor);
@@ -346,13 +330,81 @@ public class ImageTransformer {
         }
         int remainderCols = width % blockSize;
         int remainderRows = height % blockSize;
-        for (int col = width - remainderCols - 1; col < width; col++){
-            for (int row = 0; row < height; row += blockSize) {
-
+        int remainderCol = width - remainderCols;
+        int remainderRow = height - remainderRows;
+        for (int row = 0; row <= height - blockSize; row += blockSize){
+            Color averageColor = getColorBlock(remainderCol, row, remainderCols, blockSize);
+            for (int blockCol = remainderCol; blockCol < width; blockCol++){
+                for (int blockRow = row; blockRow < height; blockRow++){
+                    blockImg.set(blockCol, blockRow, averageColor);
+                }
+            }
+        }
+        for (int col = 0; col <= width - blockSize; col += blockSize){
+            Color averageColor = getColorBlock(col, remainderRow, blockSize, remainderRows);
+            for (int blockRow = remainderRow; blockRow < height; blockRow++){
+                for (int blockCol = col; blockCol < col + blockSize; blockCol++){
+                    blockImg.set(blockCol, blockRow, averageColor);
+                }
+            }
+        }
+        Color averageColor = getColorBlock(remainderCol, remainderRow, remainderCols, remainderRows);
+        for (int lastCol = remainderCol; lastCol < width; lastCol++){
+            for (int lastRow = remainderRow; lastRow < height; lastRow++){
+                blockImg.set(lastCol, lastRow, averageColor);
             }
         }
 
         return blockImg;
+    }
+    public static void main(String[] args){
+        Image originalImg = new Image("resources/95006.jpg");
+        Image expectedImg = new Image("resources/tests/95006-seurat-4x4.png");
+        ImageTransformer t = new ImageTransformer(originalImg);
+        Image outputImage = t.blockPaint(4);
+        outputImage.show();
+        expectedImg.show();
+    }
+
+    /**
+     * Helper method for blockPaint. Method will take the starting row and column
+     * of a block, as well as the block size, and will check all pixels in that box.
+     * Method will take in the RGB values of all pixels, and then average them (each
+     * color separately). This method will then return a Color object with the average
+     * RGB values.
+     * 
+     * @param col this is the column number where the specified block is starting.
+     *            Requirement: 0 <= col <= width - colSize.
+     * @param row this is the row number where the specified block is starting.
+     *            Requirement: 0 <= row <= height - rowSize.
+     * @param colSize this is the width of the block. Usually the box will be a square, but
+     *                in the edges, the block will have odd dimensions.
+     *                Requirement: 0 < colSize < width
+     * @param rowSize this is the height of the block.
+     *                Requirement: 0 < rowSize < height
+     * @return a Color object that has the average values of Red in the block, average
+     * values of Blue in the block, and average values of Green in the block.
+     *
+     */
+    private Color getColorBlock(int col, int row, int colSize, int rowSize){
+        int[] redVals = new int[colSize*rowSize];
+        int[] greenVals = new int[colSize*rowSize];
+        int[] blueVals = new int[colSize*rowSize];
+        int counter = 0;
+        for (int blockCol = col; blockCol < col + colSize - 1; blockCol++){
+            for (int blockRow = row; blockRow < row + rowSize - 1; blockRow++){
+                Color currColor = image.get(blockCol, blockRow);
+                redVals[counter] = currColor.getRed();
+                greenVals[counter] = currColor.getGreen();
+                blueVals[counter] = currColor.getBlue();
+                counter++;
+            }
+        }
+        int averageRed = findAverageArray(redVals);
+        int averageGreen = findAverageArray(greenVals);
+        int averageBlue = findAverageArray(blueVals);
+        Color averageColor = new Color(averageRed, averageGreen, averageBlue);
+        return averageColor;
     }
 
     /**
@@ -365,9 +417,9 @@ public class ImageTransformer {
      * of the elements of the array, divided by the number of elements in the array.
      *
      */
-    private float findAverageArray(int[] array){
+    private int findAverageArray(int[] array){
         int sum = 0;
-        float numElements = array.length;
+        int numElements = array.length;
         for (int i = 0; i < numElements; i++){
             sum += array[i];
         }
