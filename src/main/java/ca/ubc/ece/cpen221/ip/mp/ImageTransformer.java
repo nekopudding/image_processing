@@ -357,15 +357,6 @@ public class ImageTransformer {
 
         return blockImg;
     }
-    public static void main(String[] args){
-        Image originalImg = new Image("resources/95006.jpg");
-        Image expectedImg = new Image("resources/tests/95006-seurat-4x4.png");
-        ImageTransformer t = new ImageTransformer(originalImg);
-        Image outputImage = t.blockPaint(4);
-        outputImage.show();
-        expectedImg.show();
-    }
-
     /**
      * Helper method for blockPaint. Method will take the starting row and column
      * of a block, as well as the block size, and will check all pixels in that box.
