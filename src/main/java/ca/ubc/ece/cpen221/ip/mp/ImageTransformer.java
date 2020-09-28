@@ -6,6 +6,8 @@ import ca.ubc.ece.cpen221.ip.core.Rectangle;
 
 import java.awt.Color;
 
+import java.util.*;
+
 /**
  * This datatype (or class) provides operations for transforming an image.
  *
@@ -30,7 +32,7 @@ public class ImageTransformer {
      *
      * @param img is not null
      */
-    public ImageTransformer(Image img) {
+    public ImageTransformer(Image img){
         width = img.width();
         height = img.height();
         image = img;
@@ -193,8 +195,139 @@ public class ImageTransformer {
      * @return a denoised version of the instance.
      */
     public Image denoise() {
-        // TODO: Implement this method
-        return null;
+        Image denoisedImg = new Image(width, height);
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                float medRed = getMedian(scanNeighbors('r', col, row));
+                float medGreen = getMedian(scanNeighbors('g', col, row));
+                float medBlue = getMedian(scanNeighbors('b', col, row));
+
+                Color medColor = new Color(medRed, medGreen, medBlue);
+
+                denoisedImg.set(col, row, medColor);
+            }
+        }
+
+        return denoisedImg;
+    }
+
+    /**
+     * Helper function that scans neighbouring pixels for color.
+     * Creates three int arrays, which store the red, green,
+     * and blue values for each neighboring pixel.
+     * scanNeighbors will return the color array based off char color.
+     *
+     * Relies on countNeighbors function to operate properly.
+     *
+     * @param col is the column (x-axis) position of the pixel to be analyzed.
+     *            Must be greater than 0 and less than width.
+     *
+     * @param row is the row (y-axis) position of the pixel to be analyzed.
+     *            Must be greater than 0 and less than height.
+     *
+     * @param color is either 'r', 'g', or 'b'. scanNeighbors returns
+     *              array of red values if 'r', array of green values if
+     *              'g', and array of blue values if 'b'.
+     *
+     * @throws IllegalArgumentException if color char is not 'r','g', or 'b'.
+     *
+     * @return int array of either red, green, or blue color values for each
+     * neighboring pixel (including pixel located by row and col).
+     *
+     */
+
+    private int[] scanNeighbors(char color, int col, int row) {
+        int neighbors = countNeighbors(col, row);
+        int[] redVals = new int[neighbors + 1];
+        int[] greenVals = new int[neighbors + 1];
+        int[] blueVals = new int[neighbors + 1];
+        int counter = 0;
+        for (int i = -1; i < 2; i++) {
+            if (col + i >= 0 && col + i < width) {
+                for (int k = -1; k < 2; k++) {
+                    if (row + k >= 0 && row + k < height) {
+                        Color currColor = image.get(col + i, row + k);
+                        redVals[counter] = currColor.getRed();
+                        greenVals[counter] = currColor.getGreen();
+                        blueVals[counter] = currColor.getBlue();
+                        counter++;
+                    }
+                }
+            }
+        }
+        if (color == 'r') {
+            return redVals;
+        }
+        if (color == 'g') {
+            return greenVals;
+        }
+        if (color == 'b') {
+            return blueVals;
+        } else {
+            throw new IllegalArgumentException("illegal color parameter.");
+        }
+    }
+
+    /**
+     * Helper method getMedian. Takes in an array, sorts it, and then finds the median.
+     * If the array has even number of elements, getMedian will take the average of the
+     * two middle elements of the array.
+     * If the array has odd number of elements, getMedian will return the middle element.
+     *
+     * @param set is an array of integers. set assumed to not be empty.
+     * @return float number representing the median of set.
+     */
+    private float getMedian(int[] set) {
+        Arrays.sort(set);
+        if (set.length % 2 == 0) {
+            double med = (set[set.length / 2] + set[set.length / 2 - 1]) / 2.0;
+            float median = (float) med;
+
+        } else {
+            double med = (set[set.length / 2]);
+            float median = (float) med;
+        }
+        return 0;
+    }
+
+    /**
+     * Helper method countNeighbors. This method takes the column and row number of a pixel,
+     * and then checks how many neighbors it will have.
+     * <p>
+     * If the pixel is on the first or last column or row, the number of neighbors goes to 5.
+     * If the pixel is on a corner, the number of neighbors goes to 3.
+     * <p>
+     * There are some other edge cases accounted for if the height or width of the image
+     * is 1.
+     *
+     * @param col the column number of the pixel. 0 >= col > width.
+     * @param row the row number of the pixel. 0 >= row > height.
+     * @return the number of neighbors the pixel has.
+     */
+    private int countNeighbors(int col, int row) {
+        int neighbors = 8;
+        if (col == 0 || col == width - 1) {
+            neighbors -= 3;
+            if (width == 1) {
+                neighbors -= 3;
+            }
+        }
+        if (row == 0 || row == height - 1) {
+            if (neighbors == 5) {
+                neighbors -= 2;
+            } else if (neighbors == 2) {
+                neighbors--;
+                if (height == 1) {
+                    neighbors--;
+                }
+            } else {
+                neighbors -= 3;
+                if (height == 1) {
+                    neighbors -= 3;
+                }
+            }
+        }
+        return neighbors;
     }
 
     /**
@@ -205,8 +338,28 @@ public class ImageTransformer {
      * @return a weathered version of the image.
      */
     public Image weather() {
-        // TODO: Implement this method
-        return null;
+        Image weatheredImg = new Image(width, height);
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                int[] redVals = scanNeighbors('r', col, row);
+                Arrays.sort(redVals);
+                int minRed = redVals[0];
+
+                int[] greenVals = scanNeighbors('g', col, row);
+                Arrays.sort(greenVals);
+                int minGreen = greenVals[0];
+
+                int[] blueVals = scanNeighbors('b', col, row);
+                Arrays.sort(blueVals);
+                int minBlue = blueVals[0];
+
+                Color minColor = new Color(minRed, minGreen, minBlue);
+
+                weatheredImg.set(col, row, minColor);
+            }
+
+        }
+        return weatheredImg;
     }
 
     /**
@@ -225,8 +378,115 @@ public class ImageTransformer {
      * bottom-right corner will use a 2 x 2 block.
      */
     public Image blockPaint(int blockSize) {
-        // TODO: Implement this method
-        return null;
+        Image blockImg = new Image(width, height);
+        for (int col = 0; col <= width - blockSize; col += blockSize) {
+            for (int row = 0; row <= height - blockSize; row += blockSize) {
+                Color averageColor = getColorBlock(col, row, blockSize, blockSize);
+                for (int blockCol = col; blockCol < col + blockSize; blockCol++) {
+                    for (int blockRow = row; blockRow < row + blockSize; blockRow++) {
+                        blockImg.set(blockCol, blockRow, averageColor);
+                    }
+                }
+            }
+        }
+        int remainderCols = width % blockSize;
+        int remainderRows = height % blockSize;
+        int remainderCol = width - remainderCols;
+        int remainderRow = height - remainderRows;
+        if (remainderCols != 0) {
+            for (int row = 0; row <= height - blockSize; row += blockSize) {
+                Color averageColor = getColorBlock(remainderCol, row, remainderCols, blockSize);
+                for (int blockCol = remainderCol; blockCol < width; blockCol++) {
+                    for (int blockRow = row; blockRow < height; blockRow++) {
+                        blockImg.set(blockCol, blockRow, averageColor);
+                    }
+                }
+            }
+        }
+        if (remainderRows != 0) {
+            for (int col = 0; col <= width - blockSize; col += blockSize) {
+                Color averageColor = getColorBlock(col, remainderRow, blockSize, remainderRows);
+                for (int blockRow = remainderRow; blockRow < height; blockRow++) {
+                    for (int blockCol = col; blockCol < col + blockSize; blockCol++) {
+                        blockImg.set(blockCol, blockRow, averageColor);
+                    }
+                }
+            }
+        }
+        if (remainderCols == 0) {
+            remainderCol--;
+        }
+        if (remainderRows == 0) {
+            remainderRow--;
+        }
+        if (remainderRows != 0 && remainderCols != 0) {
+            Color averageColor =
+                getColorBlock(remainderCol, remainderRow, remainderCols, remainderRows);
+            for (int lastCol = remainderCol; lastCol < width; lastCol++) {
+                for (int lastRow = remainderRow; lastRow < height; lastRow++) {
+                    blockImg.set(lastCol, lastRow, averageColor);
+                }
+            }
+        }
+
+        return blockImg;
+    }
+
+    /**
+     * Helper method for blockPaint. Method will take the starting row and column
+     * of a block, as well as the block size, and will check all pixels in that box.
+     * Method will take in the RGB values of all pixels, and then average them (each
+     * color separately). This method will then return a Color object with the average
+     * RGB values.
+     *
+     * @param col     this is the column number where the specified block is starting.
+     *                Requirement: 0 <= col <= width - colSize.
+     * @param row     this is the row number where the specified block is starting.
+     *                Requirement: 0 <= row <= height - rowSize.
+     * @param colSize this is the width of the block. Usually the box will be a square, but
+     *                in the edges, the block will have odd dimensions.
+     *                Requirement: 0 < colSize < width
+     * @param rowSize this is the height of the block.
+     *                Requirement: 0 < rowSize < height
+     * @return a Color object that has the average values of Red in the block, average
+     * values of Blue in the block, and average values of Green in the block.
+     */
+    private Color getColorBlock(int col, int row, int colSize, int rowSize) {
+        int[] redVals = new int[colSize * rowSize];
+        int[] greenVals = new int[colSize * rowSize];
+        int[] blueVals = new int[colSize * rowSize];
+        int counter = 0;
+        for (int blockCol = col; blockCol < col + colSize; blockCol++) {
+            for (int blockRow = row; blockRow < row + rowSize; blockRow++) {
+                Color currColor = image.get(blockCol, blockRow);
+                redVals[counter] = currColor.getRed();
+                greenVals[counter] = currColor.getGreen();
+                blueVals[counter] = currColor.getBlue();
+                counter++;
+            }
+        }
+        int averageRed = findAverageArray(redVals);
+        int averageGreen = findAverageArray(greenVals);
+        int averageBlue = findAverageArray(blueVals);
+        Color averageColor = new Color(averageRed, averageGreen, averageBlue);
+        return averageColor;
+    }
+
+    /**
+     * Helper method to find average value of an array.
+     *
+     * @param array is the array to be analyzed. Array must be of ints, and must
+     *              not be empty.
+     * @return average is a number of float datatype that is equal to the sum
+     * of the elements of the array, divided by the number of elements in the array.
+     */
+    private int findAverageArray(int[] array) {
+        int sum = 0;
+        int numElements = array.length;
+        for (int i = 0; i < numElements; i++) {
+            sum += array[i];
+        }
+        return sum / numElements;
     }
 
     /**
@@ -238,9 +498,46 @@ public class ImageTransformer {
      * @param degrees the angle to rotate the image by, 0 <= degrees <= 360.
      * @return a rotate version of the instance.
      */
+
+    /*
+    the implementation requires x and y to be centered, which is col - (width/2) and row - (height/2)
+    x*cos(angle) + y*sin(angle) + oriWidth/2
+    new width = hypotenuse * cos(rotation_angle - original angle)
+    - the width and height of new image is currently offset
+    */
     public Image rotate(double degrees) {
         // TODO: Implement this method
-        return null;
+        int original_width = width;
+        int original_height = height;
+        Image original_image = image;
+
+
+        int new_width = (int) (width * Math.cos(degrees * Math.PI / 180) +
+                height * Math.sin(degrees * Math.PI / 180));
+        int new_height = (int) (width * Math.sin(degrees * Math.PI / 180) +
+                height * Math.cos(degrees * Math.PI / 180));
+        Image outImage = new Image(new_width, new_height);
+
+
+        for (int col = 0; col < new_width; col++) {
+            for (int row = 0; row < new_height; row++) {
+                int original_x = (int) ((col - width / 2) * Math.cos(degrees * Math.PI / 180) +
+                        (row - new_height / 2) * Math.sin(degrees * Math.PI / 180) + original_width / 2);
+                int original_y = (int) (-(col - width / 2) * Math.sin(degrees * Math.PI / 180) +
+                        (row - height / 2) * Math.cos(degrees * Math.PI / 180) + original_height / 2 );
+                if (original_x >= 0 && original_y >= 0 &&
+                        original_x < original_width &&
+                        original_y < original_height) {
+                    outImage.set(col, row, original_image.get(original_x, original_y));
+                } else {
+                    outImage.set(col, row, new Color(255,255,255));
+                }
+            }
+        }
+        /*outImage.show();
+        while(width > 0) {
+        }*/
+        return outImage;
     }
 
     /**
