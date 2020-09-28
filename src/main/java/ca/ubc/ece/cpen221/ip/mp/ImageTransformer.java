@@ -404,14 +404,6 @@ public class ImageTransformer {
                 counter++;
             }
         }
-        if (redVals.length == 0 || greenVals.length == 0 || blueVals.length == 0) {
-            System.out.println("column: " + col);
-            System.out.println("row: " + row);
-            System.out.println("colSize: " + colSize);
-            System.out.println("rowSize: " + rowSize);
-            System.out.println("height: " + height);
-            System.out.println("width: " + width);
-        }
         int averageRed = findAverageArray(redVals);
         int averageGreen = findAverageArray(greenVals);
         int averageBlue = findAverageArray(blueVals);
