@@ -80,8 +80,14 @@ public class ImageTransformer {
      * @return the mirror image of the instance.
      */
     public Image mirror() {
-        // TODO: Implement this method
-        return null;
+        Image mirImage = new Image(width, height);
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < Math.ceil(width / 2.0); col++) {
+                mirImage.setRGB(col, row, image.getRGB(width - col - 1, row));
+                mirImage.setRGB(width - col - 1, row, image.getRGB(col, row));
+            }
+        }
+        return mirImage;
     }
 
     /**
@@ -92,8 +98,19 @@ public class ImageTransformer {
      * @return the negative of the instance.
      */
     public Image negative() {
-        // TODO: Implement this method
-        return null;
+        Image negImage = new Image(width, height);
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                int originalPixel = image.getRGB(col, row);
+                int alpha = (originalPixel >> 24) & 0xFF;
+                int red = (originalPixel >> 16) & 0xFF;
+                int blue = (originalPixel >> 8) & 0xFF;
+                int green = originalPixel & 0xFF;
+                int desiredColor = (alpha << 24) | ((255 - red) << 16) | ((255 - blue) << 8) | (255 - green);
+                negImage.setRGB(col, row, desiredColor);
+            }
+        }
+        return negImage;
     }
 
     /**
@@ -109,8 +126,43 @@ public class ImageTransformer {
      * @return the posterized version of the instance.
      */
     public Image posterize() {
-        // TODO: Implement this method
-        return null;
+        Image posterImage = new Image(width, height);
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                int originalPixel = image.getRGB(col, row);
+                int alpha = (originalPixel >> 24) & 0xFF;
+                int red = (originalPixel >> 16) & 0xFF;
+                int blue = (originalPixel >> 8) & 0xFF;
+                int green = originalPixel & 0xFF;
+
+                if (red <= 64) {
+                    red = 32;
+                } else if (red <= 128) {
+                    red = 96;
+                } else {
+                    red = 222;
+                }
+
+                if (blue <= 64) {
+                    blue = 32;
+                } else if (blue <= 128) {
+                    blue = 96;
+                } else {
+                    blue = 222;
+                }
+
+                if (green <= 64) {
+                    green = 32;
+                } else if (green <= 128) {
+                    green = 96;
+                } else {
+                    green = 222;
+                }
+                int desiredColor = (alpha << 24) | (red << 16) | (blue << 8) | (green);
+                posterImage.setRGB(col, row, desiredColor);
+            }
+        }
+        return posterImage;
     }
 
     /**
@@ -121,9 +173,18 @@ public class ImageTransformer {
      * @throws ImageProcessingException if the clippingBox does not fit completely
      *                                  within the image.
      */
-    public Image clip(Rectangle clippingBox) {
-        // TODO: Implement this method
-        return null;
+    public Image clip(Rectangle clippingBox) throws ImageProcessingException{
+        if(clippingBox.xBottomRight > width || clippingBox.xTopLeft > width || clippingBox.yTopLeft > height || clippingBox.yBottomRight > height)
+            throw new ImageProcessingException("clippingBox is out of bounds");
+        int clipWidth = clippingBox.xBottomRight - clippingBox.xTopLeft + 1;
+        int clipHeight = clippingBox.yBottomRight - clippingBox.yTopLeft + 1;
+        Image clipImage = new Image(clipWidth, clipHeight);
+        for (int row = 0; row < clipHeight; row++) {
+            for (int col = 0; col < clipWidth; col++) {
+                clipImage.setRGB(col, row, image.getRGB(col + clippingBox.xTopLeft, row + clippingBox.yTopLeft));
+            }
+        }
+        return clipImage;
     }
 
     /**

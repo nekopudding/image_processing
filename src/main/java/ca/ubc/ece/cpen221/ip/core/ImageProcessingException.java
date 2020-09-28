@@ -5,4 +5,7 @@ package ca.ubc.ece.cpen221.ip.core;
  */
 public class ImageProcessingException extends Exception {
 
+    public ImageProcessingException(String errorMsg) {
+        super(errorMsg);
+    }
 }
