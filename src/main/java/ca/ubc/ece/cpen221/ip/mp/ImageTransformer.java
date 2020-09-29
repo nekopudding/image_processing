@@ -4,8 +4,10 @@ import ca.ubc.ece.cpen221.ip.core.Image;
 import ca.ubc.ece.cpen221.ip.core.ImageProcessingException;
 import ca.ubc.ece.cpen221.ip.core.Rectangle;
 
+import javax.imageio.ImageIO;
 import java.awt.Color;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -512,19 +514,19 @@ public class ImageTransformer {
         Image original_image = image;
 
 
-        int new_width = (int) (width * Math.cos(degrees * Math.PI / 180) +
-                height * Math.sin(degrees * Math.PI / 180));
-        int new_height = (int) (width * Math.sin(degrees * Math.PI / 180) +
-                height * Math.cos(degrees * Math.PI / 180));
+        int new_width = (int) Math.round((width * Math.cos(degrees * Math.PI / 180) +
+                height * Math.sin(degrees * Math.PI / 180)));
+        int new_height = (int) Math.round((width * Math.sin(degrees * Math.PI / 180) +
+                height * Math.cos(degrees * Math.PI / 180)));
         Image outImage = new Image(new_width, new_height);
 
 
         for (int col = 0; col < new_width; col++) {
             for (int row = 0; row < new_height; row++) {
-                int original_x = (int) ((col - width / 2) * Math.cos(degrees * Math.PI / 180) +
+                int original_x = (int) ((col - new_width / 2) * Math.cos(degrees * Math.PI / 180) +
                         (row - new_height / 2) * Math.sin(degrees * Math.PI / 180) + original_width / 2);
-                int original_y = (int) (-(col - width / 2) * Math.sin(degrees * Math.PI / 180) +
-                        (row - height / 2) * Math.cos(degrees * Math.PI / 180) + original_height / 2 );
+                int original_y = (int) (-(col - new_width / 2) * Math.sin(degrees * Math.PI / 180) +
+                        (row - new_height / 2) * Math.cos(degrees * Math.PI / 180) + original_height / 2 );
                 if (original_x >= 0 && original_y >= 0 &&
                         original_x < original_width &&
                         original_y < original_height) {
@@ -534,9 +536,6 @@ public class ImageTransformer {
                 }
             }
         }
-        /*outImage.show();
-        while(width > 0) {
-        }*/
         return outImage;
     }
 

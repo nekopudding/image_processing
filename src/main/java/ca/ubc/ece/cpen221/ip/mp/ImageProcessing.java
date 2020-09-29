@@ -34,6 +34,8 @@ public class ImageProcessing {
 
         if (width != width2 || height != height2) {
             System.out.println("Images don't have the same dimensions!");
+            System.out.println(width + " " + height);
+            System.out.println(width2 + " " + height2);
             return -1.0;
         }
 
