@@ -15,4 +15,5 @@ public class Level2Tests {
         Image outputImage = t.weather();
         assertEquals(expectedImg, outputImage);
     }
+
 }

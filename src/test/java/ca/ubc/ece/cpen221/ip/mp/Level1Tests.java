@@ -1,9 +1,11 @@
 package ca.ubc.ece.cpen221.ip.mp;
 
 import ca.ubc.ece.cpen221.ip.core.Image;
+import ca.ubc.ece.cpen221.ip.core.ImageProcessingException;
 import ca.ubc.ece.cpen221.ip.core.Rectangle;
 import org.junit.Test;
 
+import static ca.ubc.ece.cpen221.ip.mp.ImageProcessing.cosineSimilarity;
 import static org.junit.Assert.*;
 
 public class Level1Tests {
@@ -40,7 +42,13 @@ public class Level1Tests {
         Image originalImg = new Image("resources/15088.jpg");
         Image expectedImg = new Image("resources/tests/15088-clip-60-100-250-350.png");
         ImageTransformer t = new ImageTransformer(originalImg);
-        Image outputImage = t.clip(new Rectangle(60, 100, 250, 350));
+        Image outputImage;
+        try {
+            outputImage = t.clip(new Rectangle(60, 100, 250, 350));
+        }
+        catch (ImageProcessingException ipe) {
+            throw new IllegalArgumentException("invalid clippingBox position");
+        }
         assertEquals(expectedImg, outputImage);
     }
 
