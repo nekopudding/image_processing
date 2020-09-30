@@ -27,14 +27,6 @@ public class Level1Tests {
         Image outputImage = t.negative();
         assertEquals(expectedImg, outputImage);
     }
-    @Test
-    public void test_Rotation() {
-        Image originalImg = new Image("resources/12003.jpg");
-        Image expectedImg = new Image("resources/tests/12003-r30.png");
-        ImageTransformer t = new ImageTransformer(originalImg);
-        Image outputImage = t.rotate(30);
-        System.out.println(cosineSimilarity(expectedImg, outputImage));
-    }
 
     @Test
     public void test_Posterize() {
