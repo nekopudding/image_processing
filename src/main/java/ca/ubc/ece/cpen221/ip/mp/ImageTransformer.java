@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 
 import java.io.File;
+import java.sql.SQLOutput;
 import java.util.*;
 
 /**
@@ -204,7 +205,7 @@ public class ImageTransformer {
                 float medGreen = getMedian(scanNeighbors('g', col, row));
                 float medBlue = getMedian(scanNeighbors('b', col, row));
 
-                Color medColor = new Color(medRed, medGreen, medBlue);
+                Color medColor = new Color(medRed / 255, medGreen / 255, medBlue / 255);
 
                 denoisedImg.set(col, row, medColor);
             }
@@ -240,6 +241,7 @@ public class ImageTransformer {
 
     private int[] scanNeighbors(char color, int col, int row) {
         int neighbors = countNeighbors(col, row);
+        System.out.println("col " + col + "row " + row + "neighbors " + neighbors);
         int[] redVals = new int[neighbors + 1];
         int[] greenVals = new int[neighbors + 1];
         int[] blueVals = new int[neighbors + 1];
@@ -284,12 +286,14 @@ public class ImageTransformer {
         if (set.length % 2 == 0) {
             double med = (set[set.length / 2] + set[set.length / 2 - 1]) / 2.0;
             float median = (float) med;
+            return median;
 
         } else {
             double med = (set[set.length / 2]);
             float median = (float) med;
+            return median;
         }
-        return 0;
+
     }
 
     /**
