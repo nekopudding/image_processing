@@ -38,7 +38,7 @@ public class ImageProcessing {
             System.out.println("Images don't have the same dimensions!");
             System.out.println(width + " " + height);
             System.out.println(width2 + " " + height2);
-            return -1.0;
+            //return -1.0;
         }
 
         int[] vec1 = new int[width * height];

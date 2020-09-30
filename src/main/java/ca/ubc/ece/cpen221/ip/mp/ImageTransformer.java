@@ -516,7 +516,7 @@ public class ImageTransformer {
 
         int new_width = (int) Math.round((width * Math.cos(degrees * Math.PI / 180) +
                 height * Math.sin(degrees * Math.PI / 180)));
-        int new_height = (int) Math.round((width * Math.sin(degrees * Math.PI / 180) +
+        int new_height = (int) Math.ceil((width * Math.sin(degrees * Math.PI / 180) +
                 height * Math.cos(degrees * Math.PI / 180)));
         Image outImage = new Image(new_width, new_height);
 
