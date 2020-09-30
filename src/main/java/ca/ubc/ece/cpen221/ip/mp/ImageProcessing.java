@@ -2,6 +2,8 @@ package ca.ubc.ece.cpen221.ip.mp;
 
 import ca.ubc.ece.cpen221.ip.core.Image;
 
+import java.awt.*;
+
 /**
  * This class provides some simple operations involving
  * more than one image.
@@ -44,8 +46,12 @@ public class ImageProcessing {
 
         for (int rowN = 0; rowN < height; rowN++) {
             for (int colN = 0; colN < width; colN++) {
-                vec1[rowN * width + colN] = gsImg1.getRGB(colN, rowN);
-                vec2[rowN * width + colN] = gsImg2.getRGB(colN, rowN);
+                Color color1 = new Color(gsImg1.getRGB(colN, rowN));
+                Color color2 = new Color(gsImg2.getRGB(colN, rowN));
+                int tone1 = color1.getRed();
+                int tone2 = color2.getRed();
+                vec1[rowN * width + colN] = tone1;
+                vec2[rowN * width + colN] = tone2;
             }
         }
         //compare by cosine similarity
@@ -58,6 +64,7 @@ public class ImageProcessing {
             normA += Math.pow(vec1[i], 2);
             normB += Math.pow(vec2[i], 2);
         }
+
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 }
