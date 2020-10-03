@@ -575,8 +575,53 @@ public class ImageTransformer {
      * background image is smaller than the screen size.
      */
     public Image greenScreen(Color screenColour, Image backgroundImage) {
-        // TODO: Implement this method
-        return null;
+        Image greenScreenImg = new Image(image);
+        int maxCol = 0;
+        int maxRow = 0;
+        int minCol = width;
+        int minRow = height;
+
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                if (screenColour.equals(image.get(col, row))) {
+                    if (row < minRow) {
+                        minRow = row;
+                    }
+                    if (col < minCol) {
+                        minCol = col;
+                    }
+                    if (row > maxRow) {
+                        maxRow = row;
+                    }
+                    if (col > maxCol) {
+                        maxCol = col;
+                    }
+                }
+            }
+        }
+
+        int backgroundCol = -1;
+        int backgroundRow = -1;
+        for (int col = minCol; col < maxCol; col++) {
+            backgroundCol++;
+            if (backgroundCol >= backgroundImage.width()) {
+                backgroundCol = 0;
+            }
+            for (int row = minRow; row < maxRow; row++) {
+                backgroundRow++;
+                if (backgroundRow >= backgroundImage.height()) {
+                    backgroundRow = 0;
+                }
+                if (screenColour.equals(image.get(col, row))) {
+                    Color currColor = backgroundImage.get(backgroundCol, backgroundRow);
+                    greenScreenImg.set(col, row, currColor);
+                }
+            }
+            backgroundRow = -1;
+        }
+
+        return greenScreenImg;
+
     }
 
     /**
