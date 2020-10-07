@@ -35,7 +35,7 @@ public class ImageTransformer {
      *
      * @param img is not null
      */
-    public ImageTransformer(Image img){
+    public ImageTransformer(Image img) {
         width = img.width();
         height = img.height();
         image = img;
@@ -109,7 +109,8 @@ public class ImageTransformer {
                 int red = (originalPixel >> 16) & 0xFF;
                 int blue = (originalPixel >> 8) & 0xFF;
                 int green = originalPixel & 0xFF;
-                int desiredColor = (alpha << 24) | ((255 - red) << 16) | ((255 - blue) << 8) | (255 - green);
+                int desiredColor =
+                    (alpha << 24) | ((255 - red) << 16) | ((255 - blue) << 8) | (255 - green);
                 negImage.setRGB(col, row, desiredColor);
             }
         }
@@ -176,15 +177,18 @@ public class ImageTransformer {
      * @throws ImageProcessingException if the clippingBox does not fit completely
      *                                  within the image.
      */
-    public Image clip(Rectangle clippingBox) throws ImageProcessingException{
-        if(clippingBox.xBottomRight > width || clippingBox.xTopLeft > width || clippingBox.yTopLeft > height || clippingBox.yBottomRight > height)
+    public Image clip(Rectangle clippingBox) throws ImageProcessingException {
+        if (clippingBox.xBottomRight > width || clippingBox.xTopLeft > width ||
+            clippingBox.yTopLeft > height || clippingBox.yBottomRight > height) {
             throw new ImageProcessingException("clippingBox is out of bounds");
+        }
         int clipWidth = clippingBox.xBottomRight - clippingBox.xTopLeft + 1;
         int clipHeight = clippingBox.yBottomRight - clippingBox.yTopLeft + 1;
         Image clipImage = new Image(clipWidth, clipHeight);
         for (int row = 0; row < clipHeight; row++) {
             for (int col = 0; col < clipWidth; col++) {
-                clipImage.setRGB(col, row, image.getRGB(col + clippingBox.xTopLeft, row + clippingBox.yTopLeft));
+                clipImage.setRGB(col, row,
+                    image.getRGB(col + clippingBox.xTopLeft, row + clippingBox.yTopLeft));
             }
         }
         return clipImage;
@@ -219,29 +223,23 @@ public class ImageTransformer {
      * Creates three int arrays, which store the red, green,
      * and blue values for each neighboring pixel.
      * scanNeighbors will return the color array based off char color.
-     *
+     * <p>
      * Relies on countNeighbors function to operate properly.
      *
-     * @param col is the column (x-axis) position of the pixel to be analyzed.
-     *            Must be greater than 0 and less than width.
-     *
-     * @param row is the row (y-axis) position of the pixel to be analyzed.
-     *            Must be greater than 0 and less than height.
-     *
+     * @param col   is the column (x-axis) position of the pixel to be analyzed.
+     *              Must be greater than 0 and less than width.
+     * @param row   is the row (y-axis) position of the pixel to be analyzed.
+     *              Must be greater than 0 and less than height.
      * @param color is either 'r', 'g', or 'b'. scanNeighbors returns
      *              array of red values if 'r', array of green values if
      *              'g', and array of blue values if 'b'.
-     *
-     * @throws IllegalArgumentException if color char is not 'r','g', or 'b'.
-     *
      * @return int array of either red, green, or blue color values for each
      * neighboring pixel (including pixel located by row and col).
-     *
+     * @throws IllegalArgumentException if color char is not 'r','g', or 'b'.
      */
 
-    private int[] scanNeighbors(char color, int col, int row) {
+    private int[] scanNeighbors(char color, int col, int row) throws IllegalArgumentException {
         int neighbors = countNeighbors(col, row);
-        System.out.println("col " + col + "row " + row + "neighbors " + neighbors);
         int[] redVals = new int[neighbors + 1];
         int[] greenVals = new int[neighbors + 1];
         int[] blueVals = new int[neighbors + 1];
@@ -519,24 +517,26 @@ public class ImageTransformer {
 
 
         int new_width = (int) Math.round((width * Math.cos(degrees * Math.PI / 180) +
-                height * Math.sin(degrees * Math.PI / 180)));
+            height * Math.sin(degrees * Math.PI / 180)));
         int new_height = (int) Math.ceil((width * Math.sin(degrees * Math.PI / 180) +
-                height * Math.cos(degrees * Math.PI / 180)));
+            height * Math.cos(degrees * Math.PI / 180)));
         Image outImage = new Image(new_width, new_height);
 
 
         for (int col = 0; col < new_width; col++) {
             for (int row = 0; row < new_height; row++) {
                 int original_x = (int) ((col - new_width / 2) * Math.cos(degrees * Math.PI / 180) +
-                        (row - new_height / 2) * Math.sin(degrees * Math.PI / 180) + original_width / 2);
+                    (row - new_height / 2) * Math.sin(degrees * Math.PI / 180) +
+                    original_width / 2);
                 int original_y = (int) (-(col - new_width / 2) * Math.sin(degrees * Math.PI / 180) +
-                        (row - new_height / 2) * Math.cos(degrees * Math.PI / 180) + original_height / 2 );
+                    (row - new_height / 2) * Math.cos(degrees * Math.PI / 180) +
+                    original_height / 2);
                 if (original_x >= 0 && original_y >= 0 &&
-                        original_x < original_width &&
-                        original_y < original_height) {
+                    original_x < original_width &&
+                    original_y < original_height) {
                     outImage.set(col, row, original_image.get(original_x, original_y));
                 } else {
-                    outImage.set(col, row, new Color(255,255,255));
+                    outImage.set(col, row, new Color(255, 255, 255));
                 }
             }
         }
@@ -576,29 +576,11 @@ public class ImageTransformer {
      */
     public Image greenScreen(Color screenColour, Image backgroundImage) {
         Image greenScreenImg = new Image(image);
-        int maxCol = 0;
-        int maxRow = 0;
-        int minCol = width;
-        int minRow = height;
-
-        for (int col = 0; col < width; col++) {
-            for (int row = 0; row < height; row++) {
-                if (screenColour.equals(image.get(col, row))) {
-                    if (row < minRow) {
-                        minRow = row;
-                    }
-                    if (col < minCol) {
-                        minCol = col;
-                    }
-                    if (row > maxRow) {
-                        maxRow = row;
-                    }
-                    if (col > maxCol) {
-                        maxCol = col;
-                    }
-                }
-            }
-        }
+        int[] rectangle = boundingRect(screenColour);
+        int minCol = rectangle[1];
+        int minRow = rectangle[2];
+        int maxCol = rectangle[3];
+        int maxRow = rectangle[4];
 
         int backgroundCol = -1;
         int backgroundRow = -1;
@@ -622,6 +604,176 @@ public class ImageTransformer {
 
         return greenScreenImg;
 
+    }
+
+    /**
+     * Helper method that takes in a color and returns an int array describing
+     * the bounding rectangle of the largest connected region of pixels of the specified color.
+     * Required helper methods:
+     * pixelScannerRedux, setFalse, rectCoords
+     *
+     * @param color is the color that boundingRect tries to the find the largest
+     *              connected region of. color cannot be null.
+     * @return int array that describes the number of "correctly colored"
+     * (their color = color variable) pixels, and coordinates of the
+     * top left and bottom right pixels of the bounding rectangle.
+     * Values of the array are as follows:
+     * array[0]: number of "correctly colored pixels" in bounding rectangle.
+     * array[1]: column of the top left point of the bounding rectangle.
+     * array[2]: row of the top left point of the bounding rectangle.
+     * array[3]: column of the bottom right point of the bounding rectangle.
+     * array[4]: row of the bottom right point of the bounding rectangle.
+     */
+    private int[] boundingRect(Color color) {
+        Boolean[][] record = new Boolean[width][height];
+        Boolean[][] region = new Boolean[width][height];
+        setFalse(region);
+        setFalse(record);
+        int maxSize = 0;
+        int[] maxCoords = new int[5];
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                if (image.get(col, row).equals(color) && !record[col][row]) {
+                    region = new Boolean[width][height];
+                    setFalse(region);
+                    pixelScannerRedux(col, row, color, region, record);
+                    int[] coords = rectCoords(region);
+                    int size = coords[0];
+                    if (size > maxSize) {
+                        maxSize = size;
+                        maxCoords = coords;
+                    }
+                }
+            }
+        }
+        return maxCoords;
+    }
+
+
+    /**
+     * Helper method that takes the column and row of a pixel of a specific color
+     * and checks all of its neighbors that have not been examined yet.
+     * If a valid neighboring pixel is of the same color as specified,
+     * then it will add it to a queue.
+     * The method will then add the pixel to the record of all pixels examined
+     * as well as the record of the pixels in the current region being examined.
+     * After that, the next pixel in the queue will be removed from the queue and examined.
+     * This will continue until the queue is empty.
+     * Effectively creating a matrix of the connecting region of specific color pixels
+     * connected to the original pixel.
+     *
+     * @param startCol the column number of the first pixel being examined.
+     *                 0 < startCol < width
+     * @param startRow the row number of the first pixel being examined.
+     *                 0 < startRow < height
+     * @param color the color to be matched.
+     * @param pixels 2D boolean array representing all pixels as true or false. True if
+     *               pixel is same color as "color", false otherwise.
+     *               pixels' width and height should be equal to image's width and height.
+     *               pixels should be empty.
+     * @param record 2D boolean array representing all pixels as true or false. True if
+     *               pixel has been examined before, false otherwise.
+     *               record's width and height should be equal to image's width and height.
+     */
+    private void pixelScannerRedux(int startCol, int startRow, Color color, Boolean[][] pixels,
+                                   Boolean[][] record) {
+        LinkedList<int[]> queue = new LinkedList<>();
+        int[] startPoint = {startCol, startRow};
+        queue.add(startPoint);
+        while (!queue.isEmpty()) {
+            int[] nextPoint = queue.remove();
+            int col = nextPoint[0];
+            int row = nextPoint[1];
+            for (int i = -1; i < 2; i++) {
+                if (col + i >= 0 && col + i < width) {
+                    for (int k = -1; k < 2; k++) {
+                        if (row + k >= 0 && row + k < height) {
+                            if (!record[col + i][row + k]) {
+                                Color currColor = image.get(col + i, row + k);
+                                if (currColor.equals(color)) {
+                                    int[] foundPoint = {col + i, row + k};
+                                    queue.add(foundPoint);
+                                    record[col + i][row + k] = true;
+                                    pixels[col + i][row + k] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method that takes a 2D array of booleans and will
+     * create a bounding rectangle around the region of true values.
+     * Will then return an array that contains the size of the region
+     * and coordinates of top left and bottom right points of the
+     * bounding rectangle.
+     *
+     * @param region 2D boolean array that has > 0 rows and > 0 columns.
+     *               Will not be mutated.
+     *
+     * @return array of ints of size 5 that contains the following values in order:
+     * array[0]: number of true values in region.
+     * array[1]: column of the top left point of the bounding rectangle.
+     * array[2]: row of the top left point of the bounding rectangle.
+     * array[3]: column of the bottom right point of the bounding rectangle.
+     * array[4]: row of the bottom right point of the bounding rectangle.
+     */
+    private int[] rectCoords(Boolean[][] region) {
+        int height = region[0].length;
+        int width = region.length;
+        int minCol = width;
+        int minRow = height;
+        int maxCol = 0;
+        int maxRow = 0;
+        int count = 0;
+        int[] results = new int[5];
+        for (int i = 0; i < height; i++) {
+            for (int k = 0; k < width; k++) {
+                if (region[k][i] == true) {
+                    count++;
+                    if (i < minRow) {
+                        minRow = i;
+                    }
+                    if (i > maxRow) {
+                        maxRow = i;
+                    }
+                    if (k < minCol) {
+                        minCol = k;
+                    }
+                    if (k > maxCol) {
+                        maxCol = k;
+                    }
+                }
+            }
+        }
+        results[0] = count;
+        results[1] = minCol;
+        results[2] = minRow;
+        results[3] = maxCol;
+        results[4] = maxRow;
+
+        return results;
+    }
+
+    /**
+     * Helper method to take in a 2D array of booleans
+     * and set everything to false.
+     *
+     * @param matrix 2D boolean array that has > 0 rows and > 0 columns.
+     *               Will be mutated.
+     *               All values will be changed to false.
+     */
+    private void setFalse(Boolean[][] matrix) {
+        int width = matrix[0].length;
+        int height = matrix.length;
+        for (int i = 0; i < height; i++) {
+            for (int k = 0; k < width; k++) {
+                matrix[i][k] = false;
+            }
+        }
     }
 
     /**
