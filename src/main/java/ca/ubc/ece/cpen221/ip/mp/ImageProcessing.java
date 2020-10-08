@@ -29,6 +29,9 @@ public class ImageProcessing {
         int width2 = img2.width();
         int height2 = img2.height();
 
+        int tone1;
+        int tone2;
+
         ImageTransformer t1 = new ImageTransformer(img1);
         ImageTransformer t2 = new ImageTransformer(img2);
         Image gsImg1 = new Image(t1.grayscale());
@@ -44,18 +47,18 @@ public class ImageProcessing {
         int[] vec1 = new int[width * height];
         int[] vec2 = new int[width * height];
 
+        //convert images to 1D array
         for (int rowN = 0; rowN < height; rowN++) {
             for (int colN = 0; colN < width; colN++) {
                 Color color1 = new Color(gsImg1.getRGB(colN, rowN));
                 Color color2 = new Color(gsImg2.getRGB(colN, rowN));
-                int tone1 = color1.getRed();
-                int tone2 = color2.getRed();
+                tone1 = color1.getRed();
+                tone2 = color2.getRed();
                 vec1[rowN * width + colN] = tone1;
                 vec2[rowN * width + colN] = tone2;
             }
         }
         //compare by cosine similarity
-        //ref: https://stackoverflow.com/questions/520241/how-do-i-calculate-the-cosine-similarity-of-two-vectors
         double dotProduct = 0.0;
         double normA = 0.0;
         double normB = 0.0;

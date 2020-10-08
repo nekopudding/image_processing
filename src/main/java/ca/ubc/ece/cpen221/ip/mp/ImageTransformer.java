@@ -546,7 +546,43 @@ public class ImageTransformer {
      */
     public DFTOutput dft() {
         // TODO: Implement this method
-        return null;
+        Image gsImg = new Image(this.grayscale());
+        int width = gsImg.width();
+        int height = gsImg.height();
+
+        double real;
+        double imag;
+        double angle;
+
+        int tone;
+        Color color;
+
+        double[][] amplitude = new double[height][width];
+        double[][] phase = new double[height][width];
+
+        //convert dft to a complex number
+        //use the complex number to compute amplitude and phase
+        //intensity = grayscale image intensity, M = width, N = height,
+        //add together real and imaginary parts separately, then compute amp and phase
+        for (int v = 0; v < height; v++) {
+            for (int u = 0; u < width; u++) {
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        angle = -2.0 * Math.PI * ((double) u * x / (double) width + (double) v * y / height);
+                        real = Math.cos(angle);
+                        imag = Math.sin(angle);
+
+                        color = new Color(gsImg.getRGB(x, y));
+                        tone = color.getRed();
+
+                        phase[v][u] = angle;
+                        amplitude[v][u] = tone;
+                    }
+                }
+            }
+        }
+
+        return new DFTOutput(amplitude, phase);
     }
 
     /**
