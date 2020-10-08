@@ -205,9 +205,10 @@ public class ImageTransformer {
         Image denoisedImg = new Image(width, height);
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
-                float medRed = getMedian(scanNeighbors('r', col, row));
-                float medGreen = getMedian(scanNeighbors('g', col, row));
-                float medBlue = getMedian(scanNeighbors('b', col, row));
+                HashMap<String, int[]> colorVals = scanNeighbors(col, row);
+                float medRed = getMedian(colorVals.get("red"));
+                float medGreen = getMedian(colorVals.get("green"));
+                float medBlue = getMedian(colorVals.get("blue"));
 
                 Color medColor = new Color(medRed / 255, medGreen / 255, medBlue / 255);
 
@@ -222,7 +223,8 @@ public class ImageTransformer {
      * Helper function that scans neighbouring pixels for color.
      * Creates three int arrays, which store the red, green,
      * and blue values for each neighboring pixel.
-     * scanNeighbors will return the color array based off char color.
+     * scanNeighbors will return a HashMap containing all three arrays mapped to a String
+     * of their color (e.g. "red").
      * <p>
      * Relies on countNeighbors function to operate properly.
      *
@@ -230,16 +232,15 @@ public class ImageTransformer {
      *              Must be greater than 0 and less than width.
      * @param row   is the row (y-axis) position of the pixel to be analyzed.
      *              Must be greater than 0 and less than height.
-     * @param color is either 'r', 'g', or 'b'. scanNeighbors returns
-     *              array of red values if 'r', array of green values if
-     *              'g', and array of blue values if 'b'.
-     * @return int array of either red, green, or blue color values for each
-     * neighboring pixel (including pixel located by row and col).
-     * @throws IllegalArgumentException if color char is not 'r','g', or 'b'.
+     *
+     * @return HashMap of int arrays. Keys are strings that represent color, and the value is
+     * the int array that contains the red, green, or blue values of the specified
+     * pixel's neighbors.
      */
 
-    private int[] scanNeighbors(char color, int col, int row) throws IllegalArgumentException {
+    private HashMap<String, int[]> scanNeighbors(int col, int row) {
         int neighbors = countNeighbors(col, row);
+        HashMap<String, int[]> colorVals = new HashMap<String, int[]>();
         int[] redVals = new int[neighbors + 1];
         int[] greenVals = new int[neighbors + 1];
         int[] blueVals = new int[neighbors + 1];
@@ -257,17 +258,10 @@ public class ImageTransformer {
                 }
             }
         }
-        if (color == 'r') {
-            return redVals;
-        }
-        if (color == 'g') {
-            return greenVals;
-        }
-        if (color == 'b') {
-            return blueVals;
-        } else {
-            throw new IllegalArgumentException("illegal color parameter.");
-        }
+        colorVals.put("red", redVals);
+        colorVals.put("green", greenVals);
+        colorVals.put("blue", blueVals);
+        return colorVals;
     }
 
     /**
@@ -345,15 +339,16 @@ public class ImageTransformer {
         Image weatheredImg = new Image(width, height);
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
-                int[] redVals = scanNeighbors('r', col, row);
+                HashMap<String, int[]> colorVals = scanNeighbors(col, row);
+                int[] redVals = colorVals.get("red");
                 Arrays.sort(redVals);
                 int minRed = redVals[0];
 
-                int[] greenVals = scanNeighbors('g', col, row);
+                int[] greenVals = colorVals.get("green");
                 Arrays.sort(greenVals);
                 int minGreen = greenVals[0];
 
-                int[] blueVals = scanNeighbors('b', col, row);
+                int[] blueVals = colorVals.get("blue");
                 Arrays.sort(blueVals);
                 int minBlue = blueVals[0];
 
