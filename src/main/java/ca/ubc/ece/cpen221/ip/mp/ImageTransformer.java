@@ -584,12 +584,12 @@ public class ImageTransformer {
 
         int backgroundCol = -1;
         int backgroundRow = -1;
-        for (int col = minCol; col < maxCol; col++) {
+        for (int col = minCol; col <= maxCol; col++) {
             backgroundCol++;
             if (backgroundCol >= backgroundImage.width()) {
                 backgroundCol = 0;
             }
-            for (int row = minRow; row < maxRow; row++) {
+            for (int row = minRow; row <= maxRow; row++) {
                 backgroundRow++;
                 if (backgroundRow >= backgroundImage.height()) {
                     backgroundRow = 0;
@@ -666,14 +666,14 @@ public class ImageTransformer {
      *                 0 < startCol < width
      * @param startRow the row number of the first pixel being examined.
      *                 0 < startRow < height
-     * @param color the color to be matched.
-     * @param pixels 2D boolean array representing all pixels as true or false. True if
-     *               pixel is same color as "color", false otherwise.
-     *               pixels' width and height should be equal to image's width and height.
-     *               pixels should be empty.
-     * @param record 2D boolean array representing all pixels as true or false. True if
-     *               pixel has been examined before, false otherwise.
-     *               record's width and height should be equal to image's width and height.
+     * @param color    the color to be matched.
+     * @param pixels   2D boolean array representing all pixels as true or false. True if
+     *                 pixel is same color as "color", false otherwise.
+     *                 pixels' width and height should be equal to image's width and height.
+     *                 pixels should be empty.
+     * @param record   2D boolean array representing all pixels as true or false. True if
+     *                 pixel has been examined before, false otherwise.
+     *                 record's width and height should be equal to image's width and height.
      */
     private void pixelScannerRedux(int startCol, int startRow, Color color, Boolean[][] pixels,
                                    Boolean[][] record) {
@@ -713,7 +713,6 @@ public class ImageTransformer {
      *
      * @param region 2D boolean array that has > 0 rows and > 0 columns.
      *               Will not be mutated.
-     *
      * @return array of ints of size 5 that contains the following values in order:
      * array[0]: number of true values in region.
      * array[1]: column of the top left point of the bounding rectangle.

@@ -454,6 +454,7 @@ public final class Image implements ActionListener {
         for (int col = 0; col < width(); col++) {
             for (int row = 0; row < height(); row++) {
                 if (this.getRGB(col, row) != that.getRGB(col, row)) {
+                    System.out.println("col: " + col + "row: " + row);
                     return false;
                 }
             }
