@@ -43,7 +43,6 @@ public class ImageProcessing {
             System.out.println(width2 + " " + height2);
             //return -1.0;
         }
-
         int[] vec1 = new int[width * height];
         int[] vec2 = new int[width * height];
 
@@ -67,7 +66,6 @@ public class ImageProcessing {
             normA += Math.pow(vec1[i], 2);
             normB += Math.pow(vec2[i], 2);
         }
-
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
     }
 }
