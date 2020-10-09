@@ -573,9 +573,13 @@ public class ImageTransformer {
                     }
                 }
                 amplitude[v][u] = Math.sqrt(Math.pow(realSum,2) + Math.pow(imagSum,2));
-                if(Math.abs(realSum) > 1e-7 && Math.abs(imagSum) > 1e-7) {
+                if(Math.abs(realSum) > 1e-7) {
                     phase[v][u] = Math.atan(imagSum / realSum);
-                } else {
+                } else if (imagSum > 1e-7){
+                    phase[v][u] = Math.PI/2;
+                } else if (imagSum < -1e-7) {
+                    phase[v][u] = 3*Math.PI/2;
+                } else if (Math.abs(realSum) <= 1e-7 && Math.abs(imagSum) <= 1e-7 ){
                     phase[v][u] = Math.atan(1);
                 }
             }

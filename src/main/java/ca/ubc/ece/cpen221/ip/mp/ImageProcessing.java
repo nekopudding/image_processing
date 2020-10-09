@@ -61,11 +61,18 @@ public class ImageProcessing {
         double dotProduct = 0.0;
         double normA = 0.0;
         double normB = 0.0;
+        double mag;
+
         for (int i = 0; i < vec1.length; i++) {
             dotProduct += vec1[i] * vec2[i];
             normA += Math.pow(vec1[i], 2);
             normB += Math.pow(vec2[i], 2);
         }
-        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+        mag = Math.sqrt(normA) * Math.sqrt(normB);
+        if(Math.abs(dotProduct) < 1e-7 && Math.abs(mag) < 1e-7) {
+            return 1;
+        } else {
+            return dotProduct / mag;
+        }
     }
 }
