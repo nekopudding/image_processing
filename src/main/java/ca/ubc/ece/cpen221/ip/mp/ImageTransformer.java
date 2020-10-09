@@ -589,7 +589,9 @@ public class ImageTransformer {
      * Replaces a background screen with a provided image.
      * <p>
      * This operation identifies the largest connected region of the image that matches
-     * <code>screenColour</code> exactly. This operation determines a rectangle that bounds
+     * <code>screenColour</code> exactly. If there are two regions of equal size, greenScreen()
+     * will use the one containing the furthest left pixel.
+     * This operation determines a rectangle that bounds
      * the "green screen" region and overlays the <code>backgroundImage</code> over that
      * rectangle by aligning the top-left corner of the image with the top-left corner of the
      * rectangle. After determining the screen region, all pixels in that region matching
@@ -598,6 +600,7 @@ public class ImageTransformer {
      * <p>
      * If <code>backgroundImage</code> is smaller
      * than the screen then the image is tiled over the screen.
+     *
      *
      * @param screenColour    the colour of the background screen, is not null
      * @param backgroundImage the image to replace the screen with, is not null
@@ -640,6 +643,9 @@ public class ImageTransformer {
     /**
      * Helper method that takes in a color and returns an int array describing
      * the bounding rectangle of the largest connected region of pixels of the specified color.
+     * If there are multiple regions of the same size, the bounding rectangle will go over the
+     * region containing the furthest left pixel.
+     *
      * Required helper methods:
      * pixelScannerRedux, setFalse, rectCoords
      *
