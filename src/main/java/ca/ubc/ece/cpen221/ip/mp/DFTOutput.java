@@ -25,6 +25,9 @@ public class DFTOutput {
             amplitude.height == phase.width
      */
 
+    public DoubleMatrix getAmp() {return amplitude;}
+    public DoubleMatrix getPhase() {return phase;}
+
     /**
      * Create a new DFTOutput instance.
      *
@@ -40,6 +43,7 @@ public class DFTOutput {
             );
         }
     }
+
 
     @Override
     public boolean equals(Object o) {
