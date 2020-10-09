@@ -13,8 +13,8 @@ public class ImageProcessing {
     /**
      * Compute the cosine similarity between two images.
      *
-     * @param img1: the first image, is not null.
-     * @param img2: the second image, in not null and matches img1 in dimensions.
+     * @param img1 : the first image, is not null.
+     * @param img2 : the second image, in not null and matches img1 in dimensions.
      * @return the cosine similarity between the Images
      * referenced by img1 and img2.
      */

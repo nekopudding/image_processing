@@ -570,6 +570,13 @@ public class ImageTransformer {
                         angle = 2.0 * Math.PI * ((double) u * x / width + (double) v * y / height);
                         realSum += intensity*Math.cos(angle);
                         imagSum += -intensity*Math.sin(angle);
+
+                        /*debugging
+                        if (x == 0) {
+                            System.out.printf("%n Sum of row: %n");
+                        }
+                        System.out.printf(" %.2f ", realSum);
+                        */
                     }
                 }
                 amplitude[v][u] = Math.sqrt(Math.pow(realSum,2) + Math.pow(imagSum,2));
@@ -578,7 +585,7 @@ public class ImageTransformer {
                 } else if (imagSum > 1e-7){
                     phase[v][u] = Math.PI/2;
                 } else if (imagSum < -1e-7) {
-                    phase[v][u] = 3*Math.PI/2;
+                    phase[v][u] = -Math.PI/2;
                 } else if (Math.abs(realSum) <= 1e-7 && Math.abs(imagSum) <= 1e-7 ){
                     phase[v][u] = Math.atan(1);
                 }
