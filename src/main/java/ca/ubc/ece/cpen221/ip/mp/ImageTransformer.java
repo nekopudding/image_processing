@@ -550,32 +550,36 @@ public class ImageTransformer {
         int width = gsImg.width();
         int height = gsImg.height();
 
-        //double real;
-        //double imag;
+        double realSum;
+        double imagSum;
         double angle;
 
-        int tone;
+        double ampSum;
+
         Color color;
 
         double[][] amplitude = new double[height][width];
         double[][] phase = new double[height][width];
 
-        //computing amp and phase
+        //computing amp and phase for each v,u
         for (int v = 0; v < height; v++) {
             for (int u = 0; u < width; u++) {
+                ampSum = 0;
+                realSum = 0;
+                imagSum = 0;
+
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
                         angle = -2.0 * Math.PI * ((double) u * x / (double) width + (double) v * y / height);
-                        //real = Math.cos(angle);
-                        //imag = Math.sin(angle);
+                        realSum += Math.cos(angle);
+                        imagSum += Math.sin(angle);
 
                         color = new Color(gsImg.getRGB(x, y));
-                        tone = color.getRed();
-
-                        phase[v][u] = angle;
-                        amplitude[v][u] = tone;
+                        ampSum += color.getRed();
                     }
                 }
+                amplitude[v][u] = ampSum;
+                phase[v][u] = Math.atan(imagSum / realSum);
             }
         }
         return new DFTOutput(amplitude, phase);
