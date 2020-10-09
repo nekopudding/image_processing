@@ -553,10 +553,7 @@ public class ImageTransformer {
         double realSum;
         double imagSum;
         double angle;
-
-        double ampSum;
-
-        Color color;
+        double intensity;
 
         double[][] amplitude = new double[height][width];
         double[][] phase = new double[height][width];
@@ -564,22 +561,23 @@ public class ImageTransformer {
         //computing amp and phase for each v,u
         for (int v = 0; v < height; v++) {
             for (int u = 0; u < width; u++) {
-                ampSum = 0;
                 realSum = 0;
                 imagSum = 0;
 
                 for (int y = 0; y < height; y++) {
                     for (int x = 0; x < width; x++) {
-                        angle = -2.0 * Math.PI * ((double) u * x / (double) width + (double) v * y / height);
-                        realSum += Math.cos(angle);
-                        imagSum += Math.sin(angle);
-
-                        color = new Color(gsImg.getRGB(x, y));
-                        ampSum += color.getRed();
+                        intensity = Image.intensity(gsImg.get(x,y));
+                        angle = 2.0 * Math.PI * ((double) u * x / width + (double) v * y / height);
+                        realSum += intensity*Math.cos(angle);
+                        imagSum += -intensity*Math.sin(angle);
                     }
                 }
-                amplitude[v][u] = ampSum;
-                phase[v][u] = Math.atan(imagSum / realSum);
+                amplitude[v][u] = Math.sqrt(Math.pow(realSum,2) + Math.pow(imagSum,2));
+                if(Math.abs(realSum) > 1e-7 && Math.abs(imagSum) > 1e-7) {
+                    phase[v][u] = Math.atan(imagSum / realSum);
+                } else {
+                    phase[v][u] = Math.atan(1);
+                }
             }
         }
         return new DFTOutput(amplitude, phase);

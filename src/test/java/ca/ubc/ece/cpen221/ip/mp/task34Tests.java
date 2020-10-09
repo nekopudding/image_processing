@@ -21,26 +21,33 @@ public class task34Tests {
 
     @Test
     public void test_DFT() {
-        Image originalImg = new Image("resources/dft1.png");
+        Image originalImg = new Image("resources/dft2.jpg");
         ImageTransformer t = new ImageTransformer(originalImg);
         DFTOutput out = t.dft();
         DoubleMatrix amp = out.getAmp();
         DoubleMatrix phase = out.getPhase();
 
-        int width = 5;
-        int height = 5;
+        int width = originalImg.width();
+        int height = originalImg.height();
 
-        double[][] Amp = new double[height][width];
-        double[][] Phase = new double[height][width];
-        double OutImage;
+        double Amp;
+        double Phase;
 
-        //turn matrix back into double array, print the real part of dft
+        //Print amp
+        System.out.println("Magnitude:");
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                Amp[row][col] = amp.get(row,col);
-                Phase[row][col] = phase.get(row,col);
-                OutImage = Amp[row][col]*Math.cos(Phase[row][col]);
-                System.out.printf(" %.2f ", OutImage);
+                Amp = amp.get(row,col);
+                System.out.printf(" %.2f ", Amp);
+            }
+            System.out.println(" ");
+        }
+        //print Phase
+        System.out.println("Phase:");
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                Phase = phase.get(row,col);
+                System.out.printf(" %.2f ", Phase);
             }
             System.out.println(" ");
         }
