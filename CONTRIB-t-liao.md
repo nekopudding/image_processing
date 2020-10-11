@@ -1,0 +1,1 @@
+t-liao was responsible task 1 and task 6 of the mini project.
