@@ -52,4 +52,17 @@ public class Level1Tests {
         assertEquals(expectedImg, outputImage);
     }
 
+    @Test (expected = IllegalArgumentException.class)
+    public void test_Clip2() {
+        Image originalImg = new Image("resources/15088.jpg");
+        ImageTransformer t = new ImageTransformer(originalImg);
+        Image outputImage;
+        try {
+            outputImage = t.clip(new Rectangle(60, 100, 250, 500));
+        }
+        catch (ImageProcessingException ipe) {
+            throw new IllegalArgumentException("invalid clippingBox position");
+        }
+    }
+
 }
