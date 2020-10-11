@@ -61,28 +61,91 @@ public class task34Tests {
         } else {
             System.out.printf("Failed");
         }
+    }
+    @Test
+    public void test_cosSim_black_dif_dimensions() {
+        Image img1 = new Image("resources/cosSim1.jpg");
+        Image img2 = new Image("resources/cosSim_test1.jpg");
+        double cosSim = cosineSimilarity(img2, img1);
+        if (Math.abs(cosSim) > (1 - 1e-7)) {
+            System.out.println("Passed");
+        } else
+            System.out.println("Failed");
+    }
+    @Test
+    public void test_cosSim_zeros() {
+        Image img1 = new Image("resources/cosSim1.jpg");
+        Image img2 = new Image("resources/cosSim1.jpg");
+        double cosSim = cosineSimilarity(img2, img1);
+        if (Math.abs(cosSim) > (1 - 1e-7)) {
+            System.out.println("Passed");
+        } else
+            System.out.println("Failed");
+    }
 
-        /*
-        //Debugging: Print amp
-        double Amp;
-        double Phase;
-        System.out.printf("%n Magnitude: %n");
+    @Test
+    public void test_DFT_dif_zeros() {
+        Image originalImg = new Image("resources/dft_black.jpg");
+        ImageTransformer t = new ImageTransformer(originalImg);
+        DFTOutput out = t.dft();
+        DoubleMatrix amp = out.getAmp();
+        DoubleMatrix phase = out.getPhase();
+
+        int width = originalImg.width();
+        int height = originalImg.height();
+
+        double actualAmp;
+        double actualPhase;
+        boolean failed = false;
+
+        double[][] expectedAmp = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+        double[][] expectedPhase = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                Amp = amp.get(row,col);
-                System.out.printf(" %.2f ", Amp);
+                actualAmp = amp.get(row, col);
+                actualPhase = phase.get(row, col);
+
+                if (Math.abs(actualAmp - expectedAmp[row][col]) > 1e-7) {
+                    failed = true;
+                    System.out.printf("%n Test failed with magnitude at row:%i col: %i", row, col);
+                }
+                if (Math.abs(actualPhase - expectedPhase[row][col]) > 1e-7) {
+                    failed = true;
+                    System.out.printf("%n Test failed with phase at row:%i col: %i", row, col);
+                }
             }
-            System.out.println(" ");
         }
-        //print Phase
-        System.out.printf("%n Phase: %n");
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                Phase = phase.get(row,col);
-                System.out.printf(" %.2f ", Phase);
-            }
-            System.out.println(" ");
+        if (failed == false) {
+            System.out.printf("Passed");
+        } else {
+            System.out.printf("Failed");
         }
-         */
+    }
+
+    @Test
+    public void test_dftOutput() {
+        double[][] amp = {{1,1},{0,0}};
+        double[][] phase = {{0.5,0.5},{0.3,0.3}};
+
+        DFTOutput dft1 = new DFTOutput(amp, phase);
+        DFTOutput dft2 = new DFTOutput(amp, phase);
+
+        //test object equality
+        if (dft1.equals(dft2)) {
+            System.out.println("Passed equals");
+        } else {
+            System.out.println("Failed equals");
+        }
+
+        //test object inequality
+        if (!(dft1.equals(5))) {
+            System.out.println("Passed inequality");
+        } else {
+            System.out.println("Failed inequality");
+        }
+
+        //test hashcode
+        System.out.printf("Hashcode: %d", dft1.hashCode());
     }
 }
