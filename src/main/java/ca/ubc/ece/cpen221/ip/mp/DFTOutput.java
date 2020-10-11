@@ -25,6 +25,10 @@ public class DFTOutput {
             amplitude.height == phase.width
      */
 
+    /**
+     * get the amplitude (getAmp) and phase (getPhase) of the dftOutput
+     * @return amplitude, phase respectively
+     */
     public DoubleMatrix getAmp() {return amplitude;}
     public DoubleMatrix getPhase() {return phase;}
 
