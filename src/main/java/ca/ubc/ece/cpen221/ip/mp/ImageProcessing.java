@@ -38,10 +38,9 @@ public class ImageProcessing {
         Image gsImg2 = new Image(t2.grayscale());
 
         if (width != width2 || height != height2) {
-            System.out.println("Images don't have the same dimensions!");
-            System.out.println(width + " " + height);
-            System.out.println(width2 + " " + height2);
-            //return -1.0;
+            throw new IllegalArgumentException(
+                    "images should have the same dimensions"
+            );
         }
         int[] vec1 = new int[width * height];
         int[] vec2 = new int[width * height];
@@ -69,6 +68,7 @@ public class ImageProcessing {
             normB += Math.pow(vec2[i], 2);
         }
         mag = Math.sqrt(normA) * Math.sqrt(normB);
+        System.out.printf("Dot Product: %.2f Magnitude: %.2f", dotProduct, mag);
         if(Math.abs(dotProduct) < 1e-7 && Math.abs(mag) < 1e-7) {
             return 1;
         } else {
