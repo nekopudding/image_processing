@@ -1,5 +1,6 @@
 package ca.ubc.ece.cpen221.ip.mp;
 
+import ca.ubc.ece.cpen221.ip.core.DoubleMatrix;
 import ca.ubc.ece.cpen221.ip.core.Image;
 import ca.ubc.ece.cpen221.ip.core.ImageProcessingException;
 import ca.ubc.ece.cpen221.ip.core.Rectangle;
@@ -110,7 +111,7 @@ public class ImageTransformer {
                 int blue = (originalPixel >> 8) & 0xFF;
                 int green = originalPixel & 0xFF;
                 int desiredColor =
-                    (alpha << 24) | ((255 - red) << 16) | ((255 - blue) << 8) | (255 - green);
+                        (alpha << 24) | ((255 - red) << 16) | ((255 - blue) << 8) | (255 - green);
                 negImage.setRGB(col, row, desiredColor);
             }
         }
@@ -179,7 +180,7 @@ public class ImageTransformer {
      */
     public Image clip(Rectangle clippingBox) throws ImageProcessingException {
         if (clippingBox.xBottomRight > width || clippingBox.xTopLeft > width ||
-            clippingBox.yTopLeft > height || clippingBox.yBottomRight > height) {
+                clippingBox.yTopLeft > height || clippingBox.yBottomRight > height) {
             throw new ImageProcessingException("clippingBox is out of bounds");
         }
         int clipWidth = clippingBox.xBottomRight - clippingBox.xTopLeft + 1;
@@ -188,7 +189,7 @@ public class ImageTransformer {
         for (int row = 0; row < clipHeight; row++) {
             for (int col = 0; col < clipWidth; col++) {
                 clipImage.setRGB(col, row,
-                    image.getRGB(col + clippingBox.xTopLeft, row + clippingBox.yTopLeft));
+                        image.getRGB(col + clippingBox.xTopLeft, row + clippingBox.yTopLeft));
             }
         }
         return clipImage;
@@ -512,7 +513,7 @@ public class ImageTransformer {
 
 
         int new_width = (int) Math.round((width * Math.cos(degrees * Math.PI / 180) +
-            height * Math.sin(degrees * Math.PI / 180)));
+                height * Math.sin(degrees * Math.PI / 180)));
         int new_height = (int) Math.ceil((width * Math.sin(degrees * Math.PI / 180) +
             height * Math.cos(degrees * Math.PI / 180)));
         Image outImage = new Image(new_width, new_height);
@@ -609,7 +610,6 @@ public class ImageTransformer {
      * <p>
      * If <code>backgroundImage</code> is smaller
      * than the screen then the image is tiled over the screen.
-     *
      *
      * @param screenColour    the colour of the background screen, is not null
      * @param backgroundImage the image to replace the screen with, is not null
@@ -828,7 +828,34 @@ public class ImageTransformer {
      * @return the aligned image.
      */
     public Image alignTextImage() {
-        // TODO: Implement this method
-        return null;
+        DoubleMatrix amp = dft().getAmp();
+        DoubleMatrix temp = dft().getAmp();
+        Image dftImage = new Image(width, height);
+        int i;
+        int j;
+        int xPos = 0;
+        int yPos = 0;
+        double mean = 0;
+        double mag;
+
+        for (i = 0; i < width; i++) {
+            for (j = 0; j < height; j++) {
+                mean += amp.get(j, i) / width / height;
+            }
+        }
+
+        for (i = 0; i < width / 2; i++) {
+            for (j = 0; j < height / 2; j++) {
+                mag = amp.get(j, i);
+                if (mag > mean * 10) {
+                    dftImage.setRGB(i, j, 0xffffff);
+                    xPos = i;
+                    yPos = j;
+                }
+            }
+        }
+        int degree = (int) Math.toDegrees(Math.atan((double) xPos / yPos));
+
+        return rotate(degree);
     }
 }
