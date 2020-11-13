@@ -31,6 +31,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 
 /**
@@ -454,7 +456,6 @@ public final class Image implements ActionListener {
         for (int col = 0; col < width(); col++) {
             for (int row = 0; row < height(); row++) {
                 if (this.getRGB(col, row) != that.getRGB(col, row)) {
-                    System.out.println("col: " + col + "row: " + row);
                     return false;
                 }
             }
@@ -463,7 +464,7 @@ public final class Image implements ActionListener {
     }
 
     /**
-     * Returns a string representation of this image.
+     * Returns a SHA-256 string representation of this image.
      * The result is a <code>width</code>-by-<code>height</code> matrix of pixels,
      * where the color of a pixel is represented using 6 hex digits to encode
      * the red, green, and blue components.
@@ -485,7 +486,32 @@ public final class Image implements ActionListener {
             }
             sb.append("\n");
         }
-        return sb.toString().trim();
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] sha = digest.digest(sb.toString().getBytes(StandardCharsets.UTF_8));
+            return bytesToHex(sha);
+        }
+        catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Convert an array of bytes to a hexadecimal string
+     * @param hash the array of bytes to convert, is not null
+     * @return a hexadecimal string representation of {@code hash}
+     */
+    private static String bytesToHex(byte[] hash) {
+        StringBuilder hexString = new StringBuilder(2 * hash.length);
+        for (int i = 0; i < hash.length; i++) {
+            String hex = Integer.toHexString(0xff & hash[i]);
+            if(hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 
     /**
@@ -552,6 +578,23 @@ public final class Image implements ActionListener {
         if (chooser.getFile() != null) {
             save(chooser.getDirectory() + File.separator + chooser.getFile());
         }
+    }
+
+    /**
+     * Obtain the grayscale version of the image.
+     *
+     * @return the grayscale version of the instance.
+     */
+    public Image grayscale() {
+        Image gsImage = new Image(width, height);
+        for (int col = 0; col < width; col++) {
+            for (int row = 0; row < height; row++) {
+                Color color = get(col, row);
+                Color gray = Image.toGray(color);
+                gsImage.set(col, row, gray);
+            }
+        }
+        return gsImage;
     }
 
 }
