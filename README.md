@@ -1,4 +1,5 @@
-**CPEN 221 / Fall 2020**
+**School Assignment / Fall 2020**
+In this team project, we implemented several image processing operations such as rotations and Fourier Transform operations.
 
 # MiniProject 1: Image Processing
 
