@@ -2,7 +2,7 @@
 
 In this team project, we implemented several image processing operations such as rotations and Fourier Transform operations.
 
-We wrote our own test cases using branch/class/line coverage as well as edge case testing as a guideline for how to design test cases.
+We wrote our own test cases using branch/class/line coverage testing as well as edge case testing as a guideline for how we should approach designing test cases.
 
 # MiniProject 1: Image Processing
 
