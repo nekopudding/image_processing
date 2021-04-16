@@ -2,6 +2,8 @@
 
 In this team project, we implemented several image processing operations such as rotations and Fourier Transform operations.
 
+We wrote our own test cases using branch/class/line coverage as well as edge case testing as a guideline for how to design test cases.
+
 # MiniProject 1: Image Processing
 
 We will work with images (in JPEG and PNG formats) and have some fun. Image processing and computer vision algorithms are a key component of autonomous cyber-physical systems, biomedical systems, and even simple task automation systems. With this mini-project, we hope to expose you to some ideas in this application subdomain of computing.
